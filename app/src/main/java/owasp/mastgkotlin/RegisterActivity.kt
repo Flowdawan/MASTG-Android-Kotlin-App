@@ -67,6 +67,7 @@ class RegisterActivity : AppCompatActivity() {
                         }, failure = { error ->
                             longToast("Something has went wrong, please try again later")
                         }) -> Unit
+                        else -> {}
                     }
                     // remove progressbar after activity is completed
                     progressbar.visibility = View.GONE

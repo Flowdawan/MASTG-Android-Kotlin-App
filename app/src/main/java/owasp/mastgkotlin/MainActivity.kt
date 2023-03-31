@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity() {
                         }, failure = { error ->
                             longToast("Invalid login credentials")
                         }) -> Unit
+                        else -> {}
                     }
                     // remove progressbar after activity is completed
                     progressbar.visibility = View.GONE
