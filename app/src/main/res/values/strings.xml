@@ -26,4 +26,7 @@
 
     <string name="root_detection"><b>Root Detection Check</b></string>
 
+    <string name="secret_key">My_Secret_Key</string>
+    <string name="secret_API_key">AAAA-BBBB-CCCC-DDDD-EEEE</string>
+
 </resources>

@@ -60,7 +60,7 @@ class RegisterActivity : AppCompatActivity() {
                     when (result) {
                         result.fold(success = { json ->
                             //longToast(json.array().toString())
-                            //Log.d("request", request.toString())
+                            Log.d("request", request.toString())
                             //Log.d("response", response.toString())
                             //Log.d("result", response.toString())
                             longToast("New account has been created")
