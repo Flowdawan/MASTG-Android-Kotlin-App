@@ -1,0 +1,173 @@
+---
+format_version: '11'
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+project_type: android
+workflows:
+  AppLogsMonitorDecompile:
+    description: |
+      Runs tests.
+
+      Next steps:
+      - Check out [Getting started with Android apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-android-apps.html).
+    steps:
+    - git-clone@8: {}
+    - restore-gradle-cache@1: {}
+    - install-missing-android-tools@3:
+        inputs:
+        - gradlew_path: "$PROJECT_LOCATION/gradlew"
+    - android-build@1:
+        inputs:
+        - module: app
+        - variant: debug
+        is_always_run: true
+    - apt-get-install@0:
+        inputs:
+        - packages: apktool
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
+            set -o pipefail
+            # debug log
+            set -x
+            alias gsed="sed"
+            touch /bitrise/deploy/dependency-check-report.html
+
+            # write your script here
+            echo "Hello World!"
+
+            # or run a script from your repository, like:
+            # bash ./path/to/script.sh
+            # not just bash, e.g.:
+            # ruby ./path/to/script.rb
+    - apps-decompiler@1:
+        inputs:
+        - decompile_ios: 'no'
+    - monitoring-apps-permissions@1:
+        inputs:
+        - ios_app_name: " "
+        - android_permission_count: '3'
+        - check_ios: 'no'
+    - gradle-dependency-checker@1:
+        is_always_run: true
+    - monitoring-apps-logs@1: {}
+    - save-gradle-cache@1:
+        is_always_run: true
+    - deploy-to-bitrise-io@2: {}
+  deploy:
+    description: |
+      Deploys app using [Deploy to bitrise.io Step](https://devcenter.bitrise.io/en/getting-started/getting-started-with-android-apps.html#deploying-an-android-app-to-bitrise-io-53056).
+
+      Next steps:
+      - Check out [Getting started with Android apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-android-apps.html) for signing and deployment options.
+      - [Set up code signing with *Android Sign* Step](https://devcenter.bitrise.io/en/code-signing/android-code-signing/android-code-signing-using-the-android-sign-step.html).
+    steps:
+    - git-clone@8: {}
+    - install-missing-android-tools@3:
+        inputs:
+        - gradlew_path: "$PROJECT_LOCATION/gradlew"
+    - change-android-versioncode-and-versionname@1:
+        inputs:
+        - build_gradle_path: "$PROJECT_LOCATION/$MODULE/build.gradle"
+    - android-lint@0:
+        inputs:
+        - project_location: "$PROJECT_LOCATION"
+        - variant: "$VARIANT"
+        - cache_level: none
+    - android-unit-test@1:
+        inputs:
+        - project_location: "$PROJECT_LOCATION"
+        - variant: "$VARIANT"
+        - cache_level: none
+    - android-build@1:
+        inputs:
+        - project_location: "$PROJECT_LOCATION"
+        - module: "$MODULE"
+        - variant: "$VARIANT"
+        - cache_level: none
+    - sign-apk@1:
+        run_if: '{{getenv "BITRISEIO_ANDROID_KEYSTORE_URL" | ne ""}}'
+    - deploy-to-bitrise-io@2: {}
+  primary:
+    description: |
+      Runs tests.
+
+      Next steps:
+      - Check out [Getting started with Android apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-android-apps.html).
+    steps:
+    - git-clone@8: {}
+    - restore-gradle-cache@1: {}
+    - install-missing-android-tools@3:
+        inputs:
+        - gradlew_path: "$PROJECT_LOCATION/gradlew"
+    - android-build@1:
+        inputs:
+        - module: app
+        - variant: debug
+        is_always_run: true
+    - save-gradle-cache@1:
+        is_always_run: true
+    - deploy-to-bitrise-io@2: {}
+  SonarQube:
+    description: |
+      Runs tests.
+
+      Next steps:
+      - Check out [Getting started with Android apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-android-apps.html).
+    steps:
+    - git-clone@8: {}
+    - restore-gradle-cache@1: {}
+    - install-missing-android-tools@3:
+        inputs:
+        - gradlew_path: "$PROJECT_LOCATION/gradlew"
+    - sonarqube-scanner@1:
+        is_always_run: true
+    - android-build@1:
+        inputs:
+        - module: app
+        - variant: debug
+        is_always_run: true
+    - save-gradle-cache@1:
+        is_always_run: true
+    - deploy-to-bitrise-io@2: {}
+  testCategory:
+    steps:
+    - testproject-run@0: {}
+    - saucelabs-espresso-app-automate@0: {}
+    - browserstack-upload@0: {}
+    - bitrise-step-nowsecure-auto-analysis@0: {}
+    - pcloudy-app-upload@0: {}
+    - flank@0: {}
+    - bitrise-step-export-universal-apk@0: {}
+    - fortify-on-demand-mobile-assessment@0: {}
+    - testproject-upload@0: {}
+    - bitrise-snyk-scan@0: {}
+    - apptestai-test@0: {}
+    - android-instrumented-test@0: {}
+    - openstf-connect@0: {}
+    - aws-device-farm-runner@0: {}
+    - xcodebuild@0: {}
+    - android-detekt@0: {}
+    - repeato-test-runner@0: {}
+    - parse-composer-results@0: {}
+    - bitrise-step-qyrus-mobility-test-runner-android@0: {}
+    - bitrise-step-eschecker@0: {}
+  utilityCategory: {}
+meta:
+  bitrise.io:
+    stack: linux-docker-android-20.04
+    machine_type_id: standard
+app:
+  envs:
+  - opts:
+      is_expand: false
+    PROJECT_LOCATION: "."
+  - opts:
+      is_expand: false
+    MODULE: app
+  - opts:
+      is_expand: false
+    VARIANT: debug
