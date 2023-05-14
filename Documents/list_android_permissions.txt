@@ -1,0 +1,4 @@
+    android.permission.CAMERA
+    android.permission.INTERNET
+    android.permission.WRITE_EXTERNAL_STORAGE
+    owasp.mastgkotlin.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION

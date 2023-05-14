@@ -1,0 +1,14 @@
+QUALITY REPORT
+
+
+>>>>>>>>>>  CURRENT APP PERMISSIONS  <<<<<<<<<<
+Android permission count (from config): 0 
+
+
+   >>>>>>>  ANDROID  <<<<<<< 
+!!! New Android permissions have been added !!!
+You had: 0 permissions 
+And now: 4 permissions 
+You can see the list of permissions into list_android_permissions.txt 
+
+
